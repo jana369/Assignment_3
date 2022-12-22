@@ -259,6 +259,7 @@ public:
         }
         return stream;
     }
+	class throwError {};
 };
 
 int main(){
