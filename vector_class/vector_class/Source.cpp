@@ -15,15 +15,3 @@ int main() {
 	}
 	return 0;
 }
-
-
-
-
-
-
-//int num1 = 2, num2 = 3;
-//istream_iterator<int> inputInt{ cin };
-//num1 = *inputInt;
-//num2 = *inputInt;
-//ostream_iterator<int> outputInt{ cout };
-//outputInt = 5 ;
