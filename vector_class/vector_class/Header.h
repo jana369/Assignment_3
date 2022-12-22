@@ -5,11 +5,84 @@
 #include <iomanip>
 #include <stdexcept>
 using namespace std;
+template<class iterators>
+class vector_iterator {
+public:
+	using valueType   = typename iterators::valueType;
+	using pointerType = valueType*;
+	using ReferenceType = valueType&;
+	vector_iterator(pointerType ptr)
+		:m_ptr(ptr) {};
+	vector_iterator& operator++() {//prefix operator
+		m_ptr++;
+		return *this;
+	};
+	vector_iterator operator++(int n) {
+		vector_iterator iterator = *this;
+		++(*this);
+		return iterator;
+	};
+	vector_iterator operator+(int n) {
+		//vector_iterator iterator = *this;
+		for (int i = 0; i < n; i++) {
+			++m_ptr;
+		}
+		return *this;
+	};
+	vector_iterator& operator--() {//prefix operator
+		m_ptr--;
+		return *this;
+	};
+	vector_iterator operator--(int n) {
+		vector_iterator iterator = *this;
+		--(*this);
+		return iterator;
+	};
+	vector_iterator operator-(int n) {
+		vector_iterator iterator = *this;
+		for (int i = 0; i < n; i++) {
+			--(*this);
+		}
+		return iterator;
+	};
+	size_t operator-(const vector_iterator& other) {
+		return m_ptr-other.m_ptr;
+	};
+	ReferenceType operator[](int index) {
+		return *(m_ptr + index);
+	};
+	pointerType operator-> () {//the current position of the iterator
+		return m_ptr;
+	};
+	ReferenceType operator* () {
+		return *m_ptr;
+	};
+	bool operator==(const vector_iterator& other)const {
+		return m_ptr == other.m_ptr;
+	};
+	bool operator<(const vector_iterator& other)const {
+		return m_ptr <  other.m_ptr;
+	};
+	bool operator<(const int n)const {
+		return n < m_ptr;
+	};
+	bool operator>(const vector_iterator& other)const {
+		return m_ptr > other.m_ptr;
+	};
+	bool operator>=(const vector_iterator& other)const {
+		return m_ptr >= other.m_ptr;
+	};
+	bool operator!=(const vector_iterator& other)const {
+		return !(*this == other.m_ptr);
+	};
+private:
+	pointerType m_ptr;
+};
 template<class T>
 class AJVector {
 private:
-    int size, capacity;
-    T *data;
+ 	size_t size=0, capacity=0;
+	T* data=nullptr;
 public:
     //constructors and big 4
     AJVector(int capac)//creates a vector of size 0 and capacity == capac
@@ -50,40 +123,42 @@ public:
     }
 
     //access operations
-    T &operator[](int index) {
-        if (index < 0 || index >= size) {
-            //Error("getAt: index out of range");
-        }
-        if (index < size)
-            return data[index];
-    }
+    T& operator[](int index) {
+			if(index<0||index>=size)
+			throw out_of_range("exception_handling");
+
+		return data[index];
+	};
 
     //modifying operators
-    void push_back(T new_item) {//to add a new data
-        if (size < capacity) {
-            data[size++] = new_item;
-        } else {
-            capacity *= 2;
-            T *new_vector = new T[capacity * 2];
-            for (int i = 0; i < size; i++) {
-                new_vector[i] = data[i];
-            }
-            delete[] data;
-            data = new_vector;
-            new_vector = nullptr;
-            delete new_vector;
-            data[size++] = new_item;
-        }
-    }
+	size_t push_back(T new_item) {//to add a new data
+		if (size < capacity) {
+			data[size++] = new_item;
+			return size;
+		}
+		else {
+			capacity *= 2;
+			T* new_vector = new T[capacity*2];
+			for (int i = 0; i < size; i++) {
+				new_vector[i] = data[i];
+			}
+			delete[] data;
+			data = new_vector;
+			new_vector = nullptr;
+			delete[] new_vector;
+			data[size++] = new_item;
+			return size;
+		}
+	};
 
-    int Size() const {
+    size_t Size() const {
         return size;
     }
 
     T pop_back() {
 
         data[size - 1] = 0;
-
+        size--;
     }
 
     void clear() {
@@ -92,7 +167,37 @@ public:
     }
     //void insert(iterator , T);
     ////iterators
-
+    iterator begin() {
+		return iterator(data);
+	}
+	iterator end() {
+		return iterator(data + size);
+	}
+	void erase(iterator it) {
+		try {
+			if ((it > begin() || it == begin()) && it < end())
+			{
+				T* new_one;
+				new_one = new T[size - 1];
+				for (int i = 0; i < size-1 ; i++) {
+					if (i < it - begin()) { new_one[i] = data[i]; }
+					else if(i >= it - begin()){ new_one[i] = data[i + 1]; }	
+				}
+				data = new_one;
+				new_one = nullptr;
+				size--;
+				capacity--;
+			}
+			else {
+				throw throwError();
+			}
+		}
+		catch (AJVector::throwError) {
+			cout << "Exception Handling: access_denied"<<endl;
+		}
+		
+	};
+    
     int begin() {
         int *ptr = &data[0];
         return *ptr;
@@ -134,7 +239,7 @@ public:
         delete[] data;
         data = new_vector;
         new_vector = nullptr;
-        delete new_vector;
+        delete[] new_vector;
     }
 
     bool empty() {
