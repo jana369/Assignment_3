@@ -198,14 +198,14 @@ public:
 		
 	};
     
-    int begin() {
-        int *ptr = &data[0];
+     T begin() {
+        T *ptr = &data[0];
         return *ptr;
 
     }
 
-    int end() {
-        int *ptr = &data[size - 1];
+    T end() {
+        T *ptr = &data[size - 1];
         return *ptr;
     }
 
@@ -231,16 +231,19 @@ public:
 
     }
 
-    void resize(int num) const {
-        T* new_vector = new T*{capacity};
+        void resize(int num){
+        T* new_vector = new T{num};
         for (int i = 0; i < size; i++) {
             new_vector[i] = data[i];
         }
         delete[] data;
+        capacity = num;
+        data = new T{num};
         data = new_vector;
         new_vector = nullptr;
-        delete[] new_vector;
+        delete new_vector;
     }
+
 
     bool empty() {
         if (size == 0) {
