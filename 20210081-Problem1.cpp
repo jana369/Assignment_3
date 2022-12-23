@@ -1,8 +1,8 @@
-#include<iostream>
-#include<fstream>
-#include<vector>
+
+#include <iostream>
 using namespace std;
-fstream dictionary("dictionary.txt" , ios:: out);
+#include <vector>
+
 
 bool CheckStr(vector<string> Dict, string str){
     bool res = false;
@@ -15,6 +15,7 @@ bool CheckStr(vector<string> Dict, string str){
 }
 void SpaceAdder(string str, int n, string& result, vector<string> Dictionary)
 {
+
     for (int i=1; i<=n; i++)
     {
         string prefix = str.substr(0, i);
@@ -36,15 +37,10 @@ void SpaceAdder(string str, int n, string& result, vector<string> Dictionary)
 
 
 int main(){
-    vector<string>vec;
-    while(!dictionary.eof()){
-        string name;
-        dictionary >> name;
-        vec.push_back(name);
-    }
+    vector<string> Dict{"I", "we", "my", "are", "wear" , "shoes", "mohanned", "shoes","vacations"};
     string input = "Iwearmyshoes";
-    string res = "";
-    SpaceAdder(input, input.size(), res, vec);
+    string res;
+    SpaceAdder(input, input.size(), res, Dict);
     cout << res;
     return 0;
 }
