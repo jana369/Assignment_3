@@ -114,20 +114,49 @@ public:
         delete[] data;
     }
 
-    T &operator=(const AJVector &) {//copy assignment
+ 	T& operator=(const AJVector& other) {//copy assignment
+		if (data != &other.data) {
+			delete[] data;
+			size = other.size;
+			capacity = other.capacity;
+			data = new T[(other.size) + 1];
+			for (int i = 0; i < size + 1; i++) {
+				data[i] = other.data[i];
+			}
+		}
+		return data;
+	};
 
-    }
-
-    T &operator=(const AJVector &&) {//move assignment
-
-    }
+	T& operator=(const AJVector&& other) {//move assignment
+		if (data != &other.data) {
+			delete[] data;
+			size = other.size;
+			capacity = other.capacity;
+			data = new T[(other.size)+1];
+			for (int i = 0; i < size+1; i++) {
+				data[i] = other.data[i];
+			}
+			other.data = nullptr;
+			other.size = 0;
+			other.capacity = 2;
+		}
+		return data;
+	};
 
     //access operations
-    T& operator[](int index) {
-			if(index<0||index>=size)
-			throw out_of_range("exception_handling");
-
-		return data[index];
+	//access operations
+	T& operator[](int index) {
+		try {
+			if (index >= 0 || index < size) {
+				return data[index];
+			}
+			else {
+				throw throwError();
+			}
+		}
+		catch (AJVector::throwError) {
+			cout << "Exception handling: the index is out_of_range";
+		}
 	};
 
     //modifying operators
